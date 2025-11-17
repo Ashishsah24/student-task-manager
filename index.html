@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - Student Task Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body data-theme="light">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>TaskMaster</span>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle btn-icon" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Student</span>
+                        <span class="user-level">Level <span id="user-level">1</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item active" data-view="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </li>
+            <li class="nav-item" data-view="tasks">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </li>
+            <li class="nav-item" data-view="calendar">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Calendar</span>
+            </li>
+            <li class="nav-item" data-view="analytics">
+                <i class="fas fa-chart-line"></i>
+                <span>Analytics</span>
+            </li>
+            <li class="nav-item" data-view="achievements">
+                <i class="fas fa-trophy"></i>
+                <span>Achievements</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Dashboard View -->
+        <div class="view dashboard-view active" id="dashboard-view">
+            <div class="view-header">
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's your progress overview.</p>
+            </div>
+            
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-tasks">0</h3>
+                        <p>Total Tasks</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="completed-tasks">0</h3>
+                        <p>Completed</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon overdue">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="overdue-tasks">0</h3>
+                        <p>Overdue</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon streak">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="current-streak">0</h3>
+                        <p>Day Streak</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="dashboard-section">
+                <h2>Your Progress</h2>
+                <div class="progress-cards">
+                    <div class="card progress-card">
+                        <h3>Level Progress</h3>
+                        <div class="level-info">
+                            <span>Level <span id="dashboard-level">1</span></span>
+                            <span><span id="current-xp">0</span>/<span id="next-level-xp">100</span> XP</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="xp-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="card completion-chart">
+                        <h3>Task Completion</h3>
+                        <div class="chart-container" style="position: relative; height: 200px;">
+                            <canvas id="completionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Tasks -->
+            <div class="dashboard-section">
+                <h2>Upcoming Tasks</h2>
+                <div class="upcoming-tasks" id="upcoming-tasks">
+                    <!-- Tasks will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tasks View -->
+        <div class="view tasks-view" id="tasks-view">
+            <div class="view-header">
+                <h1>Tasks</h1>
+                <div class="task-controls">
+                    <div class="search-filter">
+                        <input type="text" id="task-search" placeholder="Search tasks..." class="form-control">
+                        <select id="subject-filter" class="form-control">
+                            <option value="">All Subjects</option>
+                        </select>
+                        <select id="priority-filter" class="form-control">
+                            <option value="">All Priorities</option>
+                            <option value="high">High Priority</option>
+                            <option value="medium">Medium Priority</option>
+                            <option value="low">Low Priority</option>
+                        </select>
+                    </div>
+                    <button class="btn btn--primary" id="add-task-btn">
+                        <i class="fas fa-plus"></i> Add Task
+                    </button>
+                </div>
+            </div>
+            
+            <div class="tasks-container" id="tasks-container">
+                <!-- Tasks will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Calendar View -->
+        <div class="view calendar-view" id="calendar-view">
+            <div class="view-header">
+                <h1>Calendar</h1>
+                <p>View your tasks by date</p>
+            </div>
+            <div class="calendar-container">
+                <div class="calendar-nav">
+                    <button class="btn btn--outline" id="prev-month">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="current-month">August 2025</h3>
+                    <button class="btn btn--outline" id="next-month">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid" id="calendar-grid">
+                    <!-- Calendar will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div class="view analytics-view" id="analytics-view">
+            <div class="view-header">
+                <h1>Analytics</h1>
+                <p>Track your productivity and performance</p>
+            </div>
+            
+            <div class="analytics-grid">
+                <div class="card analytics-card">
+                    <h3>Tasks by Subject</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                </div>
+                <div class="card analytics-card">
+                    <h3>Priority Distribution</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="priorityChart"></canvas>
+                    </div>
+                </div>
+                <div class="card analytics-card">
+                    <h3>Weekly Progress</h3>
+                    <div class="chart-container" style="position: relative; height: 300px;">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+                <div class="card analytics-card">
+                    <h3>Performance Metrics</h3>
+                    <div class="metrics-list">
+                        <div class="metric-item">
+                            <span>Average Completion Time</span>
+                            <strong>2.3 days</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span>Most Productive Subject</span>
+                            <strong id="top-subject">Mathematics</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span>Best Streak</span>
+                            <strong><span id="best-streak">0</span> days</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span>Total XP Earned</span>
+                            <strong><span id="total-xp">0</span> XP</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievements View -->
+        <div class="view achievements-view" id="achievements-view">
+            <div class="view-header">
+                <h1>Achievements</h1>
+                <p>Your badges and milestones</p>
+            </div>
+            
+            <div class="achievements-grid" id="achievements-grid">
+                <!-- Achievements will be populated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab-add-task" title="Add New Task">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Task Modal -->
+    <div class="modal hidden" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Task</h3>
+                <button class="modal-close" id="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="task-form">
+                    <input type="hidden" id="task-id">
+                    <div class="form-group">
+                        <label for="task-title" class="form-label">Task Title</label>
+                        <input type="text" id="task-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description" class="form-label">Description</label>
+                        <textarea id="task-description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-subject" class="form-label">Subject</label>
+                            <select id="task-subject" class="form-control" required>
+                                <!-- Options populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-priority" class="form-label">Priority</label>
+                            <select id="task-priority" class="form-control" required>
+                                <option value="low">Low Priority</option>
+                                <option value="medium">Medium Priority</option>
+                                <option value="high">High Priority</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-due-date" class="form-label">Due Date</label>
+                        <input type="date" id="task-due-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subtasks</label>
+                        <div class="subtasks-container" id="subtasks-container">
+                            <!-- Subtasks will be added dynamically -->
+                        </div>
+                        <button type="button" class="btn btn--outline btn--sm" id="add-subtask">
+                            <i class="fas fa-plus"></i> Add Subtask
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn--outline" id="cancel-task">Cancel</button>
+                <button type="submit" form="task-form" class="btn btn--primary" id="save-task">Save Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
